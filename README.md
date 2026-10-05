@@ -23,6 +23,8 @@ requirements.txt  requests + mcp
 pip install -r requirements.txt
 ```
 
+Python 3.10+ is required (the code uses `X | None` type annotations).
+
 Credentials, one of:
 
 1. `TCC_USERNAME` / `TCC_PASSWORD` env vars (recommended for MCP clients), or
@@ -46,7 +48,7 @@ python server.py          # stdio, as any MCP client expects
   "mcpServers": {
     "honeywell": {
       "command": "python",
-      "args": ["~/projects/honeywell/mcp/server.py"],
+      "args": ["/path/to/honeywell-tcc-mcp/server.py"],
       "env": {
         "TCC_USERNAME": "you@example.com",
         "TCC_PASSWORD": "..."
@@ -101,8 +103,8 @@ Report temperatures at every location:
 for loc in tcc.locations():
     print(loc["LocationID"], loc["Name"])
     for dev in tcc.device_status(loc["LocationID"]):
-        print(f"  {dev['DeviceID']}  {dev['DispTemp']:.0f}{dev['DispUnits']}  "
-              f"humidity {dev.get('IndoorHumi')}%  alerts={dev['Alerts']}")
+        print(f"  {dev['DeviceID']}  {dev['DispTemp']}{dev['DispUnits']}  "
+              f"humidity {dev.get('IndoorHumi')}%  alerts={dev.get('Alerts')}")
 ```
 
 Set a temperature:
@@ -161,6 +163,10 @@ print(paths)  # {"json": "/data/exports/report_20261005_143022.json", "csv": "..
   Verify writes with `get_device_data` / `get_device_alerts`.
 - `save_schedule_period` re-sends the other current field values of the period
   (the web app requires `Orig*` fields), so it is safe to change one value.
+  It round-trips the live editor form's own fields, so the time fields match
+  exactly what the portal rendered; if the form can't be fetched it falls
+  back to a JSON reconstruction whose time format is inferred -- verify with
+  `get_schedule` before `send_schedule` in that case.
 - Page-route endpoints (Location/Edit, Gateway/Register, MyAccount/... etc.)
   are reachable via `raw_request`; they are form pages, not JSON APIs.
 
@@ -168,7 +174,7 @@ print(paths)  # {"json": "/data/exports/report_20261005_143022.json", "csv": "..
 
 ```bash
 docker build -t honeywell-tcc-mcp .
-docker run --rm -it \
+docker run --rm -i \
   --name honeywell-tcc-mcp \
   -e TCC_USERNAME -e TCC_PASSWORD \
   -v tcc-data:/data \
@@ -184,6 +190,8 @@ docker run --rm -it \
   (`/data/exports/`, via `export_report` or the CLI `export` command) live
   there, not in the image. The image itself contains no secrets.
 - Runs as non-root user `mcp` (uid 10001).
+- Always `-i`, never `-t`: the JSON-RPC stream rides stdin/stdout, and a
+  TTY's echo plus CR/LF translation corrupts MCP stdio framing.
 
 MCP client config that launches the container (Claude Desktop / any client):
 

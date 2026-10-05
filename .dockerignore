@@ -5,3 +5,9 @@ __pycache__
 .gitignore
 .dockerignore
 data/
+# never ship secrets or local artifacts into the build context
+.env
+.env.*
+credentials*.json
+.tcc_*.json
+.review/

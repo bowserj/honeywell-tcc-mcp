@@ -8,6 +8,12 @@ services:
     # testing: `docker compose run --rm honeywell-tcc` keeps it attached to
     # the terminal's stdio, and `docker compose up` just holds it idle.
     command: ["python", "server.py"]
+    # MCP stdio framing: keep stdin open and never allocate a TTY (a TTY's
+    # echo + CR/LF translation corrupts the JSON-RPC stream)
+    stdin_open: true
+    tty: false
+    # NOTE: `docker compose config` inlines the resolved TCC_PASSWORD in its
+    # output -- never run it where the output is captured (CI logs, etc.).
     environment:
       TCC_USERNAME: ${TCC_USERNAME:-}
       TCC_PASSWORD: ${TCC_PASSWORD:-}

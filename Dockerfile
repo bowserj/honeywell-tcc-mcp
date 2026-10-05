@@ -1,7 +1,7 @@
 # Honeywell Total Connect Comfort MCP server
 #
 #   docker build -t honeywell-tcc-mcp .
-#   docker run --rm -it --env TCC_USERNAME --env TCC_PASSWORD honeywell-tcc-mcp
+#   docker run --rm -i --env TCC_USERNAME --env TCC_PASSWORD honeywell-tcc-mcp
 #
 # Session persistence: mount a volume (or bind dir) at /data and the cached
 # session cookie survives container restarts:
@@ -23,10 +23,11 @@ USER mcp
 WORKDIR /app
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
-COPY server.py tcc_api_client.py entrypoint.sh ./
+COPY --chmod=755 server.py tcc_api_client.py entrypoint.sh ./
 
 # MCP server speaks on stdin/stdout
-# (sh -c form: chmod on build-context files is unreliable on Windows hosts,
-# so the entrypoint is invoked through the shell instead of via exec bit)
+# --chmod=755: COPY preserves the build-context file mode, and the
+# entrypoint is executed by PATH through sh -c, so the exec bit must be
+# set here (a RUN chmod after USER mcp cannot chmod the root-owned file).
 ENTRYPOINT ["/bin/sh", "-c", "/app/entrypoint.sh \"$@\"", "--"]
 CMD ["python", "server.py"]

@@ -2,6 +2,9 @@
 # Ensure /data is writable before starting the server.
 # Works when the container runs as root (named volume / bind mount created
 # by an older image) and no-ops when it runs as the mcp user.
+# Fail fast: if /data/exports cannot be created, the server would silently
+# skip session persistence and re-login on every start (rate limiter).
+set -e
 if [ -d /data ] && [ -w /data ] 2>/dev/null; then
     :
 elif [ "$(id -u)" = "0" ]; then

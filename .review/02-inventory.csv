@@ -1,0 +1,10 @@
+path,language,category,loc,component,l2_status,l3_status,l3_lines_covered,l4_targets,findings_count,disposition_note
+server.py,python,source,390,mcp-server,reviewed,reviewed,1-390,F-002,F-003,F-004,F-009,F-013,5,20 tools registered+verified via stdio probe; imports verified against mcp 2.3.0
+tcc_api_client.py,python,source,828,api-client,reviewed,reviewed,1-828,F-002,F-003,F-004,F-005,F-006,F-007,F-008,F-010,F-011,F-014,F-015,10,client+CLI; pure functions executed in unit harness T1-T12
+README.md,markdown,docs,207,docs,reviewed,reviewed,1-207,F-001,F-002,F-012,F-013,4,accurate tool table (20/20); several drift items
+requirements.txt,txt,build,2,build,reviewed,reviewed,1-2,F-016,1,unpinned ranges; resolved OK against mcp 2.3.0/requests 2.34.2
+Dockerfile,docker,build,32,build,reviewed,reviewed,1-32,F-001,1,image builds; runtime broken (exec bit)
+docker-compose.yml,yaml,build,20,build,reviewed,reviewed,1-20,F-008,F-012,F-017,3,ad-hoc testing service; renders OK
+entrypoint.sh,shell,build,11,build,reviewed,reviewed,1-11,F-001,F-006,2,no set -e; mkdir failure non-fatal (demonstrated)
+.dockerignore,txt,build,7,build,reviewed,reviewed,1-7,F-017,1,excludes *.md,data/; not .env/credentials
+.gitignore,txt,build,11,build,reviewed,reviewed,1-11,none,0,hygiene good; no secret artifacts ever committed
