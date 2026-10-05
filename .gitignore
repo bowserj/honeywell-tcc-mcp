@@ -1,0 +1,11 @@
+__pycache__/
+*.pyc
+.test-session.json
+.alert_test.html
+
+# data exports (report outputs)
+exports/*.csv
+exports/*.json
+exports/*.md
+exports/*.txt
+exports/*.log

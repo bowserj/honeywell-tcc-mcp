@@ -1,0 +1,20 @@
+services:
+  honeywell-tcc:
+    build: .
+    image: honeywell-tcc-mcp
+    container_name: honeywell-tcc-mcp
+    # MCP stdio servers are usually launched by the MCP client itself
+    # (see the "Docker" section of README.md). This service is for ad-hoc
+    # testing: `docker compose run --rm honeywell-tcc` keeps it attached to
+    # the terminal's stdio, and `docker compose up` just holds it idle.
+    command: ["python", "server.py"]
+    environment:
+      TCC_USERNAME: ${TCC_USERNAME:-}
+      TCC_PASSWORD: ${TCC_PASSWORD:-}
+      # optional: path to a credentials json inside the container
+      # TCC_CREDENTIALS_FILE: /data/credentials.json
+    volumes:
+      - tcc-data:/data
+
+volumes:
+  tcc-data:
